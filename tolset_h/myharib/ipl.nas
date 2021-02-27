@@ -75,7 +75,10 @@ next:
 		CMP		CH,CYLS
 		JB		readloop		; CH < CYLS だったらreadloopへ
 
+; 読み終わったのでharibote.sysを実行だ！
 
+		JMP		0xc200
+		
 error:
 		MOV		SI,msg
 putloop:
