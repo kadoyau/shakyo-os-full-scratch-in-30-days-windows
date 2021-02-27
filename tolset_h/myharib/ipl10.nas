@@ -1,7 +1,7 @@
 ; haribote-ipl
 ; TAB=4
 
-CYLS	EQU		10				; どこまで読み込むか
+CYLS	EQU		10				; どこまで読み込むか。シリンダは80まで
 
 		ORG		0x7c00			; このプログラムがどこに読み込まれるのか
 
@@ -63,20 +63,21 @@ next:
 		MOV		AX,ES			; アドレスを0x200進める
 		ADD		AX,0x0020
 		MOV		ES,AX			; ADD ES,0x020 という命令がないのでこうしている
-		ADD		CL,1			; CLに1を足す
-		CMP		CL,18			; CLと18を比較
+		ADD		CL,1			; CLに1を足す（次のセクタへ）
+		CMP		CL,18			; CLと18を比較（セクタは18まで）
 		JBE		readloop		; CL <= 18 だったらreadloopへ
 		MOV		CL,1
-		ADD		DH,1
+		ADD		DH,1			; 次のヘッダへ
 		CMP		DH,2
-		JB		readloop		; DH < 2 だったらreadloopへ
+		JB		readloop		; DH < 2 だったら（ヘッダは裏/表しかない）readloopへ
 		MOV		DH,0
-		ADD		CH,1
+		ADD		CH,1			; 次のシリンダへ
 		CMP		CH,CYLS
 		JB		readloop		; CH < CYLS だったらreadloopへ
 
 ; 読み終わったのでharibote.sysを実行だ！
 
+		MOV		[0x0ff0],CH		; IPLがどこまで読んだのかをメモ(CYLSの値を書き込んでいる）
 		JMP		0xc200
 		
 error:
