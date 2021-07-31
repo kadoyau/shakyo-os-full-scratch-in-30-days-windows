@@ -7,10 +7,11 @@ void write_mem8(int addr, int data);
 
 void HariMain(void)
 {
-	int i;
+	int i; /* 32 bit整数型 */
 
 	for (i = 0xa0000; i <= 0xaffff; i++) {
-		write_mem8(i, 15); /* MOV BYTE [i],15 */
+	    /* 下位4bitのANDをとってしましま模様を出す */
+		write_mem8(i, i & 0x0f); /* MOV BYTE [i], i & 0x0f */
 	}
 
 	for (;;) {
